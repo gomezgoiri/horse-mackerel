@@ -1,0 +1,9 @@
+{
+  "name": "vitoria-piscina",
+  "version": "0.0.1",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.6",
+    "moment": "^2.29.1",
+    "node-fetch": "^2.6.1"
+  }
+}

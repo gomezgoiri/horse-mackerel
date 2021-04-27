@@ -1,10 +1,20 @@
-const { DAYS, SLOTS, CENTERS } = require("./constants")
+const { CENTERS, SLOTS, DAYS, DAYS_TO_ISO } = require("./constants")
 const moment = require("moment")
 
-const getWeekNumber = () => {
-  const BASE_WEEK = 30
+const BASE_WEEK = 30
+const START_BASE_WEEK = "20210422" // Day where the week starts for the webapp (Wednesday)
+
+const getNextIsoDay = isoDay => {
+  const now = moment()
+  const candidate = now.clone().isoWeekday(isoDay)
+  return candidate.isSameOrAfter(now) ? candidate : candidate.add(1, "w")
+}
+
+const getWeekNumber = isoDay => {
   const diffWeeks = Math.floor(
-    moment.duration(moment().diff(moment("20210421", "YYYYMMDD"))).as("weeks")
+    moment
+      .duration(getNextIsoDay(isoDay).diff(moment(START_BASE_WEEK, "YYYYMMDD")))
+      .as("weeks")
   )
 
   return BASE_WEEK + diffWeeks
@@ -37,6 +47,7 @@ const extractArguments = () => {
     process.exit(1)
   }
   const day = DAYS[dayArg]
+  const week = getWeekNumber(DAYS_TO_ISO[day])
   const activity = "IGE" + day // IGE === Piscina grande, ITE === Piscina pequeña
 
   if (!(slotArg in SLOTS)) {
@@ -47,10 +58,9 @@ const extractArguments = () => {
   }
   const slot = SLOTS[slotArg]
 
-  return { data, center, day, slot, activity }
+  return { data, center, week, day, slot, activity }
 }
 
 module.exports = {
-  getWeekNumber,
   extractArguments
 }

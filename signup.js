@@ -2,7 +2,7 @@ const fs = require("fs").promises
 const fetch = require("node-fetch")
 const cheerio = require("cheerio")
 
-const { getWeekNumber, extractArguments } = require("./params")
+const { extractArguments } = require("./params")
 
 const NO_PLAZAS =
   "No se puede inscribir en esta actividad. Consulte si aún quedan plazas libres."
@@ -17,18 +17,15 @@ const serialize = d =>
 const BASE_URL =
   "https://sedeelectronica.vitoria-gasteiz.org/m01-10s/actividadAction.do"
 
+const getAvailableSpotsUrl = (activity, center, week, slot) =>
+  BASE_URL +
+  `?accion=verObjetivos&prog=25&cen=${center}&activ=${activity}&detalle=detalle&id=2020||${center}||${activity}||${slot}||${week}&anio=2020&nuevaPag=1`
+
 const getAvailableSpots = async (activity, center, week, slot) => {
   const content = await fetch(
-    BASE_URL +
-      `?accion=verObjetivos&prog=25&cen=${center}&activ=${activity}&detalle=detalle&id=2020||${center}||${activity}||${slot}||${week}&anio=2020&nuevaPag=1`
+    getAvailableSpotsUrl(activity, center, week, slot)
   )
   const $ = cheerio.load(await content.text())
-
-  console.log(
-    "URL para apuntarse:",
-    BASE_URL +
-      `?accion=verObjetivos&prog=25&cen=${center}&activ=${activity}&detalle=detalle&id=2020||${center}||${activity}||${slot}||${week}&anio=2020&nuevaPag=1`
-  )
 
   // console.log($.html());
   return await $("#detalleAct > dl > dd").last().text()
@@ -69,10 +66,12 @@ const signup = async (data, activity, center, week, slot) => {
 }
 
 const main = async () => {
-  const { data, center, day, slot, activity } = extractArguments()
-  const week = getWeekNumber()
+  const { data, center, week, day, slot, activity } = extractArguments()
 
-  // "https://sedeelectronica.vitoria-gasteiz.org/m01-10s/actividadAction.do?accion=verObjetivos&prog=25&cen=35&activ=IGEX&detalle=detalle&id=2020||35||IGEX||2||28&anio=2020&nuevaPag=1"
+  console.log(
+    "URL para apuntarse:",
+    getAvailableSpotsUrl(activity, center, week, slot)
+  )
 
   const libres = (await getAvailableSpots(activity, center, week, slot)).trim()
   switch (libres) {

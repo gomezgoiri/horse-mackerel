@@ -1,3 +1,13 @@
+const CENTERS = {
+  aldabe: 35,
+  sanandres: 49
+}
+
+const SEXO = {
+  hombre: "V",
+  mujer: "H"
+}
+
 const DAYS = {
   lunes: "L",
   martes: "M",
@@ -6,6 +16,16 @@ const DAYS = {
   viernes: "V",
   sabado: "S",
   domingo: "D"
+}
+
+const DAYS_TO_ISO = {
+  L: 1,
+  M: 2,
+  X: 3,
+  J: 4,
+  V: 5,
+  S: 6,
+  D: 7
 }
 
 const SLOTS = {
@@ -20,19 +40,10 @@ const SLOTS = {
   "20:00": 9
 }
 
-const CENTERS = {
-  aldabe: 35,
-  sanandres: 49
-}
-
-const SEXO = {
-  hombre: "V",
-  mujer: "H"
-}
-
 module.exports = {
   CENTERS,
   SEXO,
   DAYS,
+  DAYS_TO_ISO,
   SLOTS
 }

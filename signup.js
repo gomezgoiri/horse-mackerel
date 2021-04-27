@@ -69,7 +69,7 @@ const signup = async (data, activity, center, week, slot) => {
 }
 
 const main = async () => {
-  const { data, center, slot, activity } = extractArguments()
+  const { data, center, day, slot, activity } = extractArguments()
   const week = getWeekNumber()
 
   // "https://sedeelectronica.vitoria-gasteiz.org/m01-10s/actividadAction.do?accion=verObjetivos&prog=25&cen=35&activ=IGEX&detalle=detalle&id=2020||35||IGEX||2||28&anio=2020&nuevaPag=1"
@@ -94,7 +94,7 @@ const main = async () => {
   const result = await signup(data, activity, center, week, slot)
   const resHtml = await result.text()
   await fs.writeFile(
-    `reserva_${data.nombre.toLowerCase()}_${dia}_${week}.html`,
+    `reserva_${data.nombre.toLowerCase()}_${day}_${week}.html`,
     resHtml
   )
 

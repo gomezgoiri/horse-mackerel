@@ -122,6 +122,8 @@ const main = async () => {
         // TODO We could check the unavailability error message.
         await sleep(WAIT_FOR_RETRY)
         retry += 1
+        if (retry === RETRY_TIMES)
+          console.log("Se superaron los intentos máximos sin éxito")
     }
   }
 }

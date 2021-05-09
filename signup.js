@@ -9,6 +9,11 @@ const NO_PLAZAS =
 const SUCCESS =
   "La inscripción se ha realizado correctamente. Si lo desea, puede imprimir esta página como justificante de la misma."
 
+const RETRY_TIMES = 10
+const WAIT_FOR_RETRY = 500
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 const serialize = d =>
   Object.entries(d)
     .map(([k, v]) => `${k}=${v}`)
@@ -90,6 +95,8 @@ const main = async () => {
       console.log(`${libres} plazas libres`)
   }
 
+  let retry = 0
+  while (retry < RETRY_TIMES) {
   const result = await signup(data, activity, center, week, slot)
   const resHtml = await result.text()
   await fs.writeFile(
@@ -98,19 +105,24 @@ const main = async () => {
   )
 
   // const resHtml = await fs.readFile("result.html", "utf8");
-
   const $ = cheerio.load(resHtml)
   const resultSentence = $(".contenido > p").last().text()
 
   switch (resultSentence) {
     case NO_PLAZAS:
       console.log("No quedan plazas")
-      break
+        return
     case SUCCESS:
       console.log("¡Apuntado correctamente!")
-      break
+        return
     default:
-      console.log(resultSentence)
+        // Something went wrong
+        // console.log(resultSentence)
+        // The website availability is not great so maybe is just a timeout, let's try it again
+        // TODO We could check the unavailability error message.
+        await sleep(WAIT_FOR_RETRY)
+        retry += 1
+    }
   }
 }
 
